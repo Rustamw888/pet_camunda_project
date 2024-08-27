@@ -1,27 +1,15 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:14
-    restart: always
-    environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-    ports:
-      - "5434:5432"
-
   camunda:
     image: camunda/camunda-bpm-platform:latest
     ports:
       - "8080:8080"
     environment:
-      - CAMUNDA_DB_DRIVER=org.postgresql.Driver
-      - CAMUNDA_DB_URL=jdbc:postgresql://postgres:5434/mydatabase
-      - CAMUNDA_DB_USERNAME=myuser
-      - CAMUNDA_DB_PASSWORD=mypassword
-    depends_on:
-      - postgres
+      - CAMUNDA_DB_DRIVER=com.h2.Driver
+      - CAMUNDA_DB_URL=jdbc:h2:mem:testdb
+      - CAMUNDA_DB_USERNAME=sa
+      - CAMUNDA_DB_PASSWORD=
 
   app:
     build: .
