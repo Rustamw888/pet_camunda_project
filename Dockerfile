@@ -1,11 +1,20 @@
-FROM openjdk:17-alpine
+FROM openjdk:17-jdk-slim
 
+# Установите рабочую директорию
 WORKDIR /app
 
-COPY target/pet-camunda-example-0.0.1-SNAPSHOT.jar pet-camunda-example-0.0.1-SNAPSHOT.jar
-#COPY ["java", "-jar", "target/pet-camunda-example-0.0.1-SNAPSHOT.jar/" ]
+# Установите Maven
+RUN apt-get update && apt-get install -y maven
 
-#EXPOSE 8081
+# Скопируйте файл pom.xml и загружайте зависимости
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-ENTRYPOINT ["java", "-jar", "pet-camunda-example-0.0.1-SNAPSHOT.jar"]
-   
+# Копируйте остальные файлы приложения
+COPY src ./src
+
+# Соберите приложение
+RUN mvn clean package -DskipTests
+
+# Запустите приложение
+CMD ["java", "-jar", "target/pet-camunda-example-0.0.1-SNAPSHOT.jar"]
